@@ -12,7 +12,7 @@ let
     { name, ... }:
     {
       options = {
-        enable = lib.mkEnableOption "stow for ${name}";
+        enable = lib.mkEnableOption "Enable stow for ${name}";
 
         dotPath = lib.mkOption {
           type = lib.types.str;
@@ -40,6 +40,9 @@ let
         };
       };
     };
+
+  isAnyUserEnabled = lib.any (user: user.enable) (lib.attrValues cfg.users);
+
 in
 {
   options.programs.stow = {
@@ -51,7 +54,7 @@ in
     };
   };
 
-  config = lib.mkIf cfg.enable lib.mergeAttrsList (
+  config = lib.mkIf (cfg.enable) lib.mergeAttrsList (
     lib.mapAttrsToList (
       userName: userCfg:
       let
@@ -87,6 +90,6 @@ in
     ) cfg.users
   )
   // {
-    environment.systemPackages = lib.mkIf cfg.enable [ pkgs.stow ];
+    environment.systemPackages = lib.mkIf isAnyUserEnabled [ pkgs.stow ];
   };
 }
