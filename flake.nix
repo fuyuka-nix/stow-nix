@@ -15,6 +15,6 @@
     withSystem = system: (import nixpkgs { inherit system; });
 
     nixosModules.default = ./modules/stow-nix.nix;
-    # devShells.default = ./devShell.nix;
+    devShells.default = ./devShell.nix;
   };
 }
