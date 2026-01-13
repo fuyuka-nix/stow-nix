@@ -6,7 +6,7 @@
 }:
 
 let
-  cfg = config.programs.stow;
+  cfg = lib.filterAttrs (n: v: v.enable) config.programs.stow.users;
 
   userOptions =
     { name, ... }:
@@ -30,19 +30,23 @@ let
         };
 
         group = lib.mkOption {
-          type = lib.types.attrsOf lib.types.bool;
           default = { };
           description = ''
             Attribute set of packages to stow, where the value is a boolean.
             Example: { nvim = true; git = false; }
           '';
           example = "{ nvim = true; }";
+          type = lib.types.attrsOf (lib.types.submodule (
+            { name, ... }:
+            {
+              options = {
+                enable = lib.mkEnableOption "${name} package to stow";
+              };
+            }
+          ));
         };
       };
     };
-
-  isAnyUserEnabled = lib.any (user: user.enable) (lib.attrValues cfg.users);
-
 in
 {
   options.programs.stow = {
@@ -69,7 +73,7 @@ in
             builtins.readFile ./scripts/apply-dotfiles.sh
           );
         in
-        lib.mkIf userCfg.enable {
+        {
           systemd.services."stow-nix-${userName}" = {
             description = "Apply stow dotfiles for user ${userName}";
             serviceConfig = {
@@ -87,9 +91,9 @@ in
             '';
           };
         }
-      ) cfg.users
+      ) cfg
     )
     // {
-      environment.systemPackages = lib.mkIf isAnyUserEnabled [ pkgs.stow ];
+      environment.systemPackages = lib.mkIf ((lib.length cfg) != 0) [ pkgs.stow ];
     };
 }
