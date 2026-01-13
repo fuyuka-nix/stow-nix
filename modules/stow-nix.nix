@@ -33,9 +33,9 @@ let
           default = { };
           description = ''
             Attribute set of packages to stow, where the value is a boolean.
-            Example: { nvim = true; git = false; }
+            Example: { nvim.enable = true; git.enable = false; }
           '';
-          example = "{ nvim = true; }";
+          example = "{ nvim.enable = true; }";
           type = lib.types.attrsOf (lib.types.submodule (
             { name, ... }:
             {
@@ -92,8 +92,10 @@ in
           };
         }
       ) cfg)
-      ++ [{
-        environment.systemPackages = lib.mkIf ((lib.length cfg) != 0) [ pkgs.stow ];
-      }]
+      ++ [
+        {
+          environment.systemPackages = lib.mkIf ((lib.length cfg) != 0) [ pkgs.stow ];
+        }
+      ]
     );
 }
