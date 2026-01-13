@@ -7,16 +7,12 @@
 
   outputs = {
     nixpkgs,
-    self,
     ...
   }:
   {
     inherit nixpkgs;
 
     withSystem = system: (import nixpkgs { inherit system; });
-    importStow =
-      system:
-      (import self.nixosModules.default { pkgs = self.withSystem system; });
 
     nixosModules.default = ./modules/stow-nix.nix;
     devShells.default = ./devShell.nix;
