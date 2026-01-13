@@ -6,7 +6,7 @@
 }:
 
 let
-  cfg = lib.filterAttrs (n: v: v.enable) config.programs.stow.users;
+  cfg = lib.filterAttrs (_: v: v.enable) config.programs.stow.users;
 
   userOptions =
     { name, ... }:
@@ -33,7 +33,6 @@ let
           default = { };
           description = ''
             Attribute set of packages to stow, where the value is a boolean.
-            Example: { nvim.enable = true; git.enable = false; }
           '';
           example = "{ nvim.enable = true; }";
           type = lib.types.attrsOf (lib.types.submodule (
@@ -63,7 +62,7 @@ in
         userName: userCfg:
         let
           userHome = config.users.users.${userName}.home;
-          enabledPackages = lib.attrNames (lib.filterAttrs (_: v: v) userCfg.group);
+          enabledPackages = lib.attrNames (lib.filterAttrs (_: v: v.enable) userCfg.group);
           resolvedDotPath =
             if lib.strings.hasPrefix "~/" userCfg.dotPath then
               userHome + (lib.strings.removePrefix "~/" userCfg.dotPath)
