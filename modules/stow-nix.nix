@@ -93,9 +93,9 @@ in
         }
       ) cfg)
       ++ [
-        {
-          environment.systemPackages = lib.mkIf ((lib.length cfg) != 0) [ pkgs.stow ];
-        }
+        (lib.mkIf (cfg != {}) {
+          environment.systemPackages = [ pkgs.stow ];
+        })
       ]
     );
 }
