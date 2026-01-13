@@ -2,22 +2,23 @@
   description = "stow-nix: Declarative dotfiles management using GNU Stow in NixOS";
 
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-23.11";
-    flake-utils.url = "github:numtide/flake-utils";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.11";
   };
 
   outputs = {
-    self,
     nixpkgs,
-    flake-utils,
+    self,
     ...
   }:
-    flake-utils.lib.eachDefaultSystem (system: let
-      pkgs = import nixpkgs {inherit system;};
-    in {
-      packages.stow = pkgs.stow;
+  {
+    inherit nixpkgs;
 
-      nixosModules.default = import ./modules/stow-nix.nix {inherit pkgs;};
-      devShells.default = import ./devShell.nix {inherit pkgs;};
-    });
+    withSystem = system: (import nixpkgs { inherit system; });
+    importStow =
+      system:
+      (import self.nixosModules.default { pkgs = self.withSystem system; });
+
+    nixosModules.default = ./modules/stow-nix.nix;
+    devShells.default = ./devShell.nix;
+  };
 }
