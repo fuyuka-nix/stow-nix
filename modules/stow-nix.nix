@@ -54,7 +54,7 @@ in
   };
 
   config =
-    lib.mkMerge (
+    lib.mergeAttrsList (
       lib.mapAttrsToList (
         userName: userCfg:
         let
