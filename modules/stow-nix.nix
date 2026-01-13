@@ -58,8 +58,8 @@ in
   };
 
   config =
-    lib.mergeAttrsList (
-      lib.mapAttrsToList (
+    lib.mkMerge (
+      (lib.mapAttrsToList (
         userName: userCfg:
         let
           userHome = config.users.users.${userName}.home;
@@ -91,9 +91,9 @@ in
             '';
           };
         }
-      ) cfg
-    )
-    // {
-      environment.systemPackages = lib.mkIf ((lib.length cfg) != 0) [ pkgs.stow ];
-    };
+      ) cfg)
+      ++ [{
+        environment.systemPackages = lib.mkIf ((lib.length cfg) != 0) [ pkgs.stow ];
+      }]
+    );
 }
