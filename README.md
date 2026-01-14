@@ -20,6 +20,15 @@ Declarative dotfiles management using GNU Stow and Nix/NixOS, with a robust syst
 inputs.stow-nix.url = "github:lonerOrz/stow-nix";
 ```
 
+```nix
+# flake.nix (alt syntax)
+inputs.stow-nix = {
+  type = "github";
+  owner = "lonerOrz";
+  repo = "stow-nix";
+};
+```
+
 ### 2. Import and configure the module
 
 Import the module into your NixOS configuration. Define the settings for each user under `programs.stow.users`. The module will automatically create and trigger a `systemd` service for each enabled user.
@@ -52,7 +61,7 @@ Import the module into your NixOS configuration. Define the settings for each us
       # "another-user" = {
       #   enable = true;
       #   dotPath = "/home/another-user/dots"; # Absolute paths also work.
-      #   group = { zsh = true; };
+      #   group = { zsh.enable = true; };
       # };
     };
   };
@@ -88,12 +97,17 @@ nix develop
 ```
 
 ## 📝 TODO
-
+system-specific alternative files or templated files
 - [ ] Improve argument parsing reliability.
   - [ ] Add support for package names containing spaces.
 - [ ] Enhance symlinking reliability (perhaps with a Python-based implementation).
 - [ ] Implement a test suite to verify module behavior.
+- [ ] Actually implement the default flake's DevShell.
 
 ## License
 
 MIT
+
+## Extra notes
+
+- If you're reading this, I couldn't make this work yet, I really don't know why I'm getting an infinite recursion.
